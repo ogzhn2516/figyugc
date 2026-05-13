@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { ArrowRight, Loader2, LockKeyhole, Sprout } from "lucide-react";
+import { ArrowRight, Loader2, LockKeyhole, PackagePlus, Sprout } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useState } from "react";
 
@@ -41,10 +42,25 @@ function LoginForm() {
   }
 
   return (
-    <main className="relative grid min-h-[calc(100vh-77px)] place-items-center overflow-hidden px-4 py-10 sm:px-6 lg:px-8">
+    <main className="relative min-h-[calc(100vh-77px)] overflow-hidden px-4 py-8 sm:px-6 lg:px-8">
       <div className="absolute left-8 top-12 h-40 w-40 rounded-full bg-fig-leaf/30 blur-3xl" />
       <div className="absolute bottom-10 right-8 h-52 w-52 rounded-full bg-fig-clay/25 blur-3xl" />
-      <section className="relative grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/55 shadow-panel backdrop-blur-xl lg:grid-cols-[1fr_0.86fr]">
+
+      <div className="relative mx-auto mb-5 w-full max-w-5xl rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-card backdrop-blur sm:flex sm:items-center sm:justify-between sm:p-6">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-fig-moss">figyfun ugc</p>
+          <h1 className="mt-2 font-display text-3xl font-black leading-tight text-fig-ink sm:text-4xl">Ürün talep et</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
+            UGC içerik üreticisi başvurusu yapmak için formu doldur.
+          </p>
+        </div>
+        <Link href="/ugc" className="btn-primary mt-4 w-full sm:mt-0 sm:w-auto">
+          <PackagePlus className="h-4 w-4" />
+          Ürün talep et
+        </Link>
+      </div>
+
+      <section className="relative mx-auto grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/60 bg-white/55 shadow-panel backdrop-blur-xl lg:grid-cols-[1fr_0.86fr]">
         <div className="hidden min-h-[620px] flex-col justify-between bg-fig-ink p-10 text-fig-cream lg:flex">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-fig-cream/20 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-fig-sand">

@@ -22,11 +22,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <span className="block text-[10px] font-black uppercase tracking-[0.28em] text-fig-moss">Influencer CRM</span>
               </span>
             </Link>
-            <nav className="hidden items-center gap-2 sm:flex">
-              <Link href="/panel" className="btn-soft px-4 py-2">Panel</Link>
-              <Link href="/ugc" className="btn-soft px-4 py-2">UGC Formu</Link>
-              <Link href="/login" className="btn-primary px-4 py-2">Giriş</Link>
-            </nav>
           </div>
         </header>
         {children}
