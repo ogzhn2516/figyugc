@@ -13,6 +13,18 @@ const emptyForm = {
   followerCount: "",
 };
 
+async function readJsonResponse(response: Response) {
+  const text = await response.text();
+
+  if (!text) return {};
+
+  try {
+    return JSON.parse(text) as { error?: string };
+  } catch {
+    return { error: text };
+  }
+}
+
 export function UgcApplicationForm() {
   const [form, setForm] = useState(emptyForm);
   const [isSaving, setIsSaving] = useState(false);
@@ -35,7 +47,7 @@ export function UgcApplicationForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const data = (await response.json()) as { error?: string };
+      const data = await readJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error ?? "Başvuru kaydedilemedi.");

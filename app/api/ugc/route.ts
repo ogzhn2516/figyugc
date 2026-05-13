@@ -42,34 +42,46 @@ function normalizeInstagram(value: string) {
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as UgcApplication;
-  const fullName = clean(body.fullName);
-  const phone = clean(body.phone);
-  const province = clean(body.province);
-  const district = clean(body.district);
-  const address = clean(body.address);
-  const followerCount = clean(body.followerCount);
-  const instagram = normalizeInstagram(clean(body.instagram));
+  try {
+    const body = (await request.json()) as UgcApplication;
+    const fullName = clean(body.fullName);
+    const phone = clean(body.phone);
+    const province = clean(body.province);
+    const district = clean(body.district);
+    const address = clean(body.address);
+    const followerCount = clean(body.followerCount);
+    const instagram = normalizeInstagram(clean(body.instagram));
 
-  if (!fullName || !phone || !province || !district || !address || !instagram.username) {
-    return NextResponse.json({ error: "Lütfen zorunlu alanları doldurun." }, { status: 400 });
+    if (!fullName || !phone || !province || !district || !address || !instagram.username) {
+      return NextResponse.json({ error: "Lutfen zorunlu alanlari doldurun." }, { status: 400 });
+    }
+
+    const influencer = await createInfluencer({
+      fullName,
+      platform: "Instagram",
+      username: instagram.username,
+      phone,
+      city: `${province} / ${district}`,
+      address,
+      followerCount,
+      niche: "UGC",
+      status: "Aday",
+      collaborationType: "UGC basvurusu",
+      profileUrl: instagram.url,
+      instagramUrl: instagram.url,
+      notes: "UGC basvuru formundan geldi.",
+    });
+
+    return NextResponse.json({ influencer }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? `Basvuru kaydedilemedi: ${error.message}`
+            : "Basvuru kaydedilemedi. Lutfen tekrar deneyin.",
+      },
+      { status: 500 },
+    );
   }
-
-  const influencer = await createInfluencer({
-    fullName,
-    platform: "Instagram",
-    username: instagram.username,
-    phone,
-    city: `${province} / ${district}`,
-    address,
-    followerCount,
-    niche: "UGC",
-    status: "Aday",
-    collaborationType: "UGC başvurusu",
-    profileUrl: instagram.url,
-    instagramUrl: instagram.url,
-    notes: "UGC başvuru formundan geldi.",
-  });
-
-  return NextResponse.json({ influencer }, { status: 201 });
 }

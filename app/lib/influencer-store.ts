@@ -60,7 +60,9 @@ type InfluencerDocument = {
 };
 
 const kvKey = "figyfun:influencers";
-const localDataPath = path.join(process.cwd(), "data", "influencers.json");
+const localDataPath = process.env.VERCEL
+  ? path.join("/tmp", "figyfun-influencers.json")
+  : path.join(process.cwd(), "data", "influencers.json");
 
 function hasKv() {
   return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
