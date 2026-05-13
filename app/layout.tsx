@@ -24,7 +24,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Link>
             <nav className="hidden items-center gap-2 sm:flex">
               <Link href="/panel" className="btn-soft px-4 py-2">Panel</Link>
-              <Link href="/influencers" className="btn-soft px-4 py-2">Influencerlar</Link>
               <Link href="/ugc" className="btn-soft px-4 py-2">UGC Formu</Link>
               <Link href="/login" className="btn-primary px-4 py-2">Giriş</Link>
             </nav>
