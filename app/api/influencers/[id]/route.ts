@@ -8,24 +8,38 @@ type RouteContext = {
 };
 
 export async function PUT(request: Request, context: RouteContext) {
-  const { id } = await context.params;
-  const body = await request.json();
-  const influencer = await updateInfluencer(id, body);
+  try {
+    const { id } = await context.params;
+    const body = await request.json();
+    const influencer = await updateInfluencer(id, body);
 
-  if (!influencer) {
-    return NextResponse.json({ error: "Influencer kaydı bulunamadı." }, { status: 404 });
+    if (!influencer) {
+      return NextResponse.json({ error: "Influencer kaydi bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ influencer });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Kayit guncellenemedi." },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ influencer });
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const { id } = await context.params;
-  const deleted = await deleteInfluencer(id);
+  try {
+    const { id } = await context.params;
+    const deleted = await deleteInfluencer(id);
 
-  if (!deleted) {
-    return NextResponse.json({ error: "Influencer kaydı bulunamadı." }, { status: 404 });
+    if (!deleted) {
+      return NextResponse.json({ error: "Influencer kaydi bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ status: "deleted" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Kayit silinemedi." },
+      { status: 500 },
+    );
   }
-
-  return NextResponse.json({ status: "deleted" });
 }

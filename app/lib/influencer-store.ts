@@ -60,12 +60,16 @@ type InfluencerDocument = {
 };
 
 const kvKey = "figyfun:influencers";
-const localDataPath = process.env.VERCEL
-  ? path.join("/tmp", "figyfun-influencers.json")
-  : path.join(process.cwd(), "data", "influencers.json");
+const localDataPath = path.join(process.cwd(), "data", "influencers.json");
 
 function hasKv() {
   return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+}
+
+function assertPersistentStorage() {
+  if (process.env.VERCEL && !hasKv()) {
+    throw new Error("Vercel KV bagli degil. Basvurularin panelde kalici gorunmesi icin KV_REST_API_URL ve KV_REST_API_TOKEN eklenmeli.");
+  }
 }
 
 async function kvCommand<T>(command: unknown[]) {
@@ -92,6 +96,8 @@ async function readDocument(): Promise<InfluencerDocument> {
     return result ? (JSON.parse(result) as InfluencerDocument) : { influencers: [] };
   }
 
+  assertPersistentStorage();
+
   try {
     const file = await readFile(localDataPath, "utf8");
     return JSON.parse(file) as InfluencerDocument;
@@ -106,6 +112,7 @@ async function writeDocument(document: InfluencerDocument) {
     return;
   }
 
+  assertPersistentStorage();
   await mkdir(path.dirname(localDataPath), { recursive: true });
   await writeFile(localDataPath, `${JSON.stringify(document, null, 2)}\n`, "utf8");
 }
