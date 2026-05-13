@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 const emptyForm = {
   fullName: "",
   phone: "",
+  email: "",
   province: "",
   district: "",
   address: "",
@@ -105,6 +106,19 @@ export function UgcApplicationForm() {
               className="field"
               placeholder="05xx xxx xx xx"
               inputMode="tel"
+              required
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="label">E-posta adresi</span>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(event) => updateField("email", event.target.value)}
+              className="field"
+              placeholder="mail@ornek.com"
+              autoComplete="email"
               required
             />
           </label>
