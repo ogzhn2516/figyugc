@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Instagram, Loader2, Plus, Trash2, UsersRound } from "lucide-react";
+import { ExternalLink, Instagram, Loader2, MapPin, Phone, Plus, Trash2, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { Influencer } from "../lib/influencer-store";
@@ -24,6 +24,10 @@ function instagramHref(username: string, instagramUrl: string, profileUrl: strin
 
   const clean = cleanUsername(username);
   return clean ? `https://www.instagram.com/${clean}/` : "";
+}
+
+function isUgcApplication(influencer: Influencer) {
+  return influencer.niche === "UGC" || influencer.collaborationType.toLowerCase().includes("ugc");
 }
 
 export function InfluencerListClient({ initialInfluencers }: { initialInfluencers: Influencer[] }) {
@@ -134,7 +138,7 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
             <p className="text-xs font-black uppercase tracking-[0.24em] text-fig-sand">figyfun influencer listesi</p>
             <h1 className="mt-4 font-display text-5xl font-black leading-none">Tüm influencerlar</h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-fig-sand">
-              Kullanıcı adını yaz, sistem Instagram profilini ve takipçi sayısını otomatik yakalamayı denesin.
+              UGC başvuruları ve eklediğin influencerlar bu listede görünür.
             </p>
           </div>
           <Link href="/panel" className="btn-soft border-white/20 bg-white/10 text-fig-cream hover:bg-white/20">
@@ -173,35 +177,56 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
 
         {influencers.length === 0 ? (
           <div className="grid min-h-64 place-items-center rounded-3xl border border-dashed border-fig-sand bg-white/45 px-8 text-center text-sm font-bold leading-6 text-stone-500">
-            Henüz influencer kaydı yok. Yukarıdan Instagram kullanıcı adıyla ekleyebilirsin.
+            Henüz influencer kaydı yok. UGC başvurusu geldiğinde burada görünecek.
           </div>
         ) : (
           <div className="divide-y divide-fig-sand/70 overflow-hidden rounded-3xl border border-fig-sand/70 bg-white/75">
             {influencers.map((influencer) => {
               const href = instagramHref(influencer.username, influencer.instagramUrl, influencer.profileUrl);
               const displayUsername = influencer.username || influencer.fullName || "Kullanıcı adı yok";
+              const isUgc = isUgcApplication(influencer);
 
               return (
-                <article key={influencer.id} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <article key={influencer.id} className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
-                    {href ? (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex max-w-full items-center gap-2 text-lg font-black text-fig-ink transition hover:text-fig-clay"
-                      >
-                        <Instagram className="h-5 w-5 shrink-0 text-fig-moss" />
-                        <span className="truncate">{displayUsername}</span>
-                        <ExternalLink className="h-4 w-4 shrink-0" />
-                      </a>
-                    ) : (
-                      <p className="inline-flex max-w-full items-center gap-2 text-lg font-black text-fig-ink">
-                        <Instagram className="h-5 w-5 shrink-0 text-fig-moss" />
-                        <span className="truncate">{displayUsername}</span>
-                      </p>
-                    )}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {href ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex max-w-full items-center gap-2 text-lg font-black text-fig-ink transition hover:text-fig-clay"
+                        >
+                          <Instagram className="h-5 w-5 shrink-0 text-fig-moss" />
+                          <span className="truncate">{displayUsername}</span>
+                          <ExternalLink className="h-4 w-4 shrink-0" />
+                        </a>
+                      ) : (
+                        <p className="inline-flex max-w-full items-center gap-2 text-lg font-black text-fig-ink">
+                          <Instagram className="h-5 w-5 shrink-0 text-fig-moss" />
+                          <span className="truncate">{displayUsername}</span>
+                        </p>
+                      )}
+                      {isUgc ? <span className="rounded-full bg-fig-clay px-3 py-1 text-xs font-black text-white">UGC başvurusu</span> : null}
+                    </div>
+
                     <p className="mt-1 text-sm font-bold text-stone-500">{influencer.fullName || influencer.platform}</p>
+
+                    {isUgc ? (
+                      <div className="mt-3 grid gap-2 text-sm font-bold text-stone-600 sm:grid-cols-2">
+                        {influencer.phone ? (
+                          <p className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-fig-moss" /> {influencer.phone}
+                          </p>
+                        ) : null}
+                        {influencer.city ? (
+                          <p className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-fig-moss" /> {influencer.city}
+                          </p>
+                        ) : null}
+                        {influencer.address ? <p className="sm:col-span-2">Adres: {influencer.address}</p> : null}
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="flex shrink-0 items-center gap-2">
