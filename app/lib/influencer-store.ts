@@ -64,15 +64,24 @@ const localDataPath = process.env.VERCEL
   ? path.join("/tmp", "figyfun-influencers.json")
   : path.join(process.cwd(), "data", "influencers.json");
 
+function getKvConfig() {
+  return {
+    url: process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "",
+    token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "",
+  };
+}
+
 function hasKv() {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  const { url, token } = getKvConfig();
+  return Boolean(url && token);
 }
 
 async function kvCommand<T>(command: unknown[]) {
-  const response = await fetch(process.env.KV_REST_API_URL!, {
+  const { url, token } = getKvConfig();
+  const response = await fetch(url, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(command),

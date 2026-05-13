@@ -2,7 +2,7 @@
 
 import { ExternalLink, Instagram, Loader2, MapPin, Phone, Plus, Trash2, UsersRound } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import type { Influencer } from "../lib/influencer-store";
 
 type InstagramLookupProfile = {
@@ -34,6 +34,7 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
   const [influencers, setInfluencers] = useState(initialInfluencers);
   const [username, setUsername] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -42,6 +43,30 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
     () => new Set(influencers.map((item) => cleanUsername(item.username).toLowerCase()).filter(Boolean)),
     [influencers],
   );
+
+  async function refreshInfluencers() {
+    setIsRefreshing(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/influencers", { cache: "no-store" });
+      const data = (await response.json()) as { influencers?: Influencer[]; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Liste alınamadı.");
+      }
+
+      setInfluencers(data.influencers ?? []);
+    } catch (apiError) {
+      setError(apiError instanceof Error ? apiError.message : "Beklenmeyen bir hata oluştu.");
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
+
+  useEffect(() => {
+    void refreshInfluencers();
+  }, []);
 
   async function addByUsername(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -173,6 +198,7 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
         <div className="mb-4 flex items-center gap-3 px-2">
           <UsersRound className="h-5 w-5 text-fig-moss" />
           <p className="text-sm font-black uppercase tracking-[0.18em] text-stone-500">{influencers.length} kayıt</p>
+          {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin text-fig-moss" /> : null}
         </div>
 
         {influencers.length === 0 ? (
@@ -225,6 +251,7 @@ export function InfluencerListClient({ initialInfluencers }: { initialInfluencer
                           </p>
                         ) : null}
                         {influencer.address ? <p className="sm:col-span-2">Adres: {influencer.address}</p> : null}
+                        {influencer.email ? <p className="sm:col-span-2">E-posta: {influencer.email}</p> : null}
                       </div>
                     ) : null}
                   </div>
